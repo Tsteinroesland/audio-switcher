@@ -7,7 +7,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+    (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         
@@ -35,23 +35,23 @@
           ];
         };
         
-        # NixOS module for easy integration
-        nixosModules.default = { config, lib, pkgs, ... }: {
-          options.programs.audio-switcher = {
-            enable = lib.mkEnableOption "audio switcher script";
-          };
-          
-          config = lib.mkIf config.programs.audio-switcher.enable {
-            environment.systemPackages = [ 
-              self.packages.${system}.audio-switcher 
-            ];
-          };
-        };
-        
         # App entry for desktop integration
         apps.default = {
           type = "app";
           program = "${audio-switcher}/bin/audio-switcher";
         };
-      });
+      })) // {
+      # NixOS module for easy integration (at top level)
+      nixosModules.default = { config, lib, pkgs, ... }: {
+        options.programs.audio-switcher = {
+          enable = lib.mkEnableOption "audio switcher script";
+        };
+        
+        config = lib.mkIf config.programs.audio-switcher.enable {
+          environment.systemPackages = [ 
+            self.packages.${pkgs.system}.default
+          ];
+        };
+      };
+    };
 }
