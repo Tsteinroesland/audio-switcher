@@ -34,12 +34,6 @@
             wireplumber
           ];
         };
-        
-        # App entry for desktop integration
-        apps.default = {
-          type = "app";
-          program = "${audio-switcher}/bin/audio-switcher";
-        };
       })) // {
       # NixOS module for easy integration (at top level)
       nixosModules.default = { config, lib, pkgs, ... }: {
