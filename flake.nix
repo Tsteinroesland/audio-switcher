@@ -17,7 +17,9 @@
             pkgs.wireplumber  # provides wpctl
           ]}:$PATH
           
-          exec ${pkgs.babashka}/bin/bb ${./audio-switcher.clj} "$@"
+          cat << 'EOF' | ${pkgs.babashka}/bin/bb "$@"
+          ${builtins.readFile ./audio-switcher.clj}
+          EOF
         '';
         
       in {
